@@ -4,6 +4,8 @@ $(document).ready(function() {
     var $img_maru = $("#img-maru").clone().removeAttr("id");
     var $img_batsu = $("#img-batsu").clone().removeAttr("id");
 
+    var cnt = 0; // ○×選択総数
+
     // ○×を回転させる処理
     function rotateMaruBatsu($obj) {
         $obj
@@ -24,12 +26,87 @@ $(document).ready(function() {
         );
     }
 
+    // 全部のマスのイベントを解除する
+    function removeBoxEvent() {
+        for (var k=1; k<=9; ++k) {
+            $("#box" + k).off();
+        }
+    }
+
+    // そろっているかどうかの判定処理
+    //
+    // 勝ち負け・・・随時
+    // 引き分け・・・cnt == 9 のとき
+    //
+    // 1 2 3
+    // 4 5 6
+    // 7 8 9
+    //
+    // - - -  | | |      ／  ＼
+    // - - -  | | |    ／      ＼
+    // - - -  | | |  ／          ＼
+    function getWinner() {
+        // ヨコ
+        for (var j=1; j<=7; j+=3) {
+            if ($("#box" + j).attr("checkmark") != undefined &&
+                $("#box" + j).attr("checkmark") == $("#box" + (j + 1)).attr("checkmark") &&
+                $("#box" + j).attr("checkmark") == $("#box" + (j + 2)).attr("checkmark"))
+            {
+                return $("#box" + j).attr("checkmark");
+            }
+        }
+
+        // タテ
+        for (var j=1; j<=3; j+=1) {
+            if ($("#box" + j).attr("checkmark") != undefined &&
+                $("#box" + j).attr("checkmark") == $("#box" + (j + 3)).attr("checkmark") &&
+                $("#box" + j).attr("checkmark") == $("#box" + (j + 6)).attr("checkmark"))
+            {
+                return $("#box" + j).attr("checkmark");
+            }
+        }
+
+        // ナナメ（／）
+        if ($("#box3").attr("checkmark") != undefined &&
+            $("#box3").attr("checkmark") == $("#box5").attr("checkmark") &&
+            $("#box3").attr("checkmark") == $("#box7").attr("checkmark"))
+        {
+            return $("#box3").attr("checkmark");
+        }
+
+        // ナナメ（＼）
+        if ($("#box1").attr("checkmark") != undefined &&
+            $("#box1").attr("checkmark") == $("#box5").attr("checkmark") &&
+            $("#box1").attr("checkmark") == $("#box9").attr("checkmark"))
+        {
+            return $("#box3").attr("checkmark");
+        }
+
+        // 引き分け表示
+        // 勝敗が決まっていない かつ すべてのマスに○×配置済み
+        if (cnt == 9) {
+            return "draw";
+        }
+
+        return null;
+    }
+
+    // 勝者チェック
+    function checkWinner() {
+        var result = getWinner();
+        if (result == "draw") {
+            alert("引き分け。。。");
+            removeBoxEvent();
+        } else if (result != null) {
+            alert(result + "の勝ち！");
+            removeBoxEvent();
+        }
+    }
+
     // クリアボタンでリロードする
     $("#clear").on("click", function() {
         location.reload();
     });
-
-    var cnt = 0; // ○×選択総数
 
     for (var i=1; i<=9; ++i) {
         (function(i) {
@@ -49,83 +126,10 @@ $(document).ready(function() {
                         rotateMaruBatsu($appendImage);
                         $(this).append($appendImage);
                     }
-
-                    // そろっているかどうかの判定処理
-                    //
-                    // 勝ち負け・・・随時
-                    // 引き分け・・・cnt == 9 のとき
-                    //
-                    // 1 2 3
-                    // 4 5 6
-                    // 7 8 9
-                    //
-                    // - - -  | | |      ／  ＼
-                    // - - -  | | |    ／      ＼
-                    // - - -  | | |  ／          ＼
-
-                    var winFlag = false;
-
-                    // ヨコ
-                    for (var j=1; j<=7; j+=3) {
-                        if ($("#box" + j).attr("checkmark") != undefined &&
-                            $("#box" + j).attr("checkmark") == $("#box" + (j + 1)).attr("checkmark") &&
-                            $("#box" + j).attr("checkmark") == $("#box" + (j + 2)).attr("checkmark"))
-                        {
-                            alert($("#box" + j).attr("checkmark") + "の勝ち！");
-                            winFlag = true;
-                            for (var k=1; k<=9; ++k) {
-                                $("#box" + k).off();
-                            }
-                        }
-                    }
-
-                    // タテ
-                    for (var j=1; j<=3; j+=1) {
-                        if ($("#box" + j).attr("checkmark") != undefined &&
-                            $("#box" + j).attr("checkmark") == $("#box" + (j + 3)).attr("checkmark") &&
-                            $("#box" + j).attr("checkmark") == $("#box" + (j + 6)).attr("checkmark"))
-                        {
-                            alert($("#box" + j).attr("checkmark") + "の勝ち！");
-                            winFlag = true;
-                            for (var k=1; k<=9; ++k) {
-                                $("#box" + k).off();
-                            }
-                        }
-                    }
-
-                    // ナナメ（／）
-                    if ($("#box3").attr("checkmark") != undefined &&
-                        $("#box3").attr("checkmark") == $("#box5").attr("checkmark") &&
-                        $("#box3").attr("checkmark") == $("#box7").attr("checkmark"))
-                    {
-                        alert($("#box3").attr("checkmark") + "の勝ち！");
-                        winFlag = true;
-                        for (var k=1; k<=9; ++k) {
-                            $("#box" + k).off();
-                        }
-                    }
-
-                    // ナナメ（＼）
-                    if ($("#box1").attr("checkmark") != undefined &&
-                        $("#box1").attr("checkmark") == $("#box5").attr("checkmark") &&
-                        $("#box1").attr("checkmark") == $("#box9").attr("checkmark"))
-                    {
-                        alert($("#box1").attr("checkmark") + "の勝ち！");
-                        winFlag = true;
-                        for (var k=1; k<=9; ++k) {
-                            $("#box" + k).off();
-                        }
-                    }
-
-                    // 引き分け表示
-                    // 勝敗が決まっていない かつ すべてのマスに○×配置済み
-                    if (winFlag == false && cnt == 9) {
-                        alert("引き分け。。。");
-                        for (var k=1; k<=9; ++k) {
-                            $("#box" + k).off();
-                        }
-                    }
                 }
+
+                // 勝ち負け判定処理
+                checkWinner();
             });
         })(i);
     }
