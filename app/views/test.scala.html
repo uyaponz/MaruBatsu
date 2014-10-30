@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <style>
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        td {
+            border: 1px solid black;
+            margin: 0;
+            padding: 0;
+            width: 50px;
+            height :50px;
+            text-align: center;
+        }
+        div {
+            margin: 0;
+            padding: 0;
+        }
+        .marubatsu {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.easing.min.js"))'></script>
+
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/test.js")" ></script>
+</head>
+
+<body>
+    <div>
+        <h1>まるばつげーむ</h1>
+        <a id="clear" href="javascript:void(0);">クリア</a>
+    </div>
+
+    <div>
+        <table>
+            <tbody>
+                <tr>
+                    <td id="box1"></td>
+                    <td id="box2"></td>
+                    <td id="box3"></td>
+                </tr>
+                <tr>
+                    <td id="box4"></td>
+                    <td id="box5"></td>
+                    <td id="box6"></td>
+                </tr>
+                <tr>
+                    <td id="box7"></td>
+                    <td id="box8"></td>
+                    <td id="box9"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display:none">
+        <div id="img-maru" class="marubatsu"><img src="@routes.Assets.at("images/maru.png")" width="50px" height="50px"></div>
+        <div id="img-batsu" class="marubatsu"><img src="@routes.Assets.at("images/batsu.png")" width="50px" height="50px"></div>
+    </div>
+</body>
+
+</html>
