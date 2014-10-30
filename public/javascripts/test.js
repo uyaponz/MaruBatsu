@@ -20,7 +20,8 @@ $(document).ready(function() {
                     .css("transform", "scale(" + (now * 2 - 1) + "," + 1 + ")");
                 },
                 complete: function() {
-                    $(this).css("rotationCounter", 0);
+                    // 勝ち負け判定処理
+                    checkWinner();
                 }
             }
         );
@@ -30,6 +31,33 @@ $(document).ready(function() {
     function removeBoxEvent() {
         for (var k=1; k<=9; ++k) {
             $("#box" + k).off();
+        }
+    }
+
+    // 全部のマスにイベントを割り当てる
+    function setBoxEvent() {
+        for (var i=1; i<=9; ++i) {
+            (function(i) {
+                $("#box" + i).on("click", function() {
+                    removeBoxEvent(); // クリックされたらイベント解除しておく
+                    if ($(this).attr("checkmark") != undefined) {
+                        alert("すでに選択済みです！");
+                    } else {
+                        cnt += 1;
+                        if (cnt % 2 == 0) {
+                            $(this).attr("checkmark", "×");
+                            var $appendImage = $img_batsu.clone();
+                            rotateMaruBatsu($appendImage);
+                            $(this).append($appendImage);
+                        } else {
+                            $(this).attr("checkmark", "○");
+                            var $appendImage = $img_maru.clone();
+                            rotateMaruBatsu($appendImage);
+                            $(this).append($appendImage);
+                        }
+                    }
+                });
+            })(i);
         }
     }
 
@@ -100,6 +128,8 @@ $(document).ready(function() {
         } else if (result != null) {
             alert(result + "の勝ち！");
             removeBoxEvent();
+        } else {
+            setBoxEvent();
         }
     }
 
@@ -108,30 +138,7 @@ $(document).ready(function() {
         location.reload();
     });
 
-    for (var i=1; i<=9; ++i) {
-        (function(i) {
-            $("#box" + i).on("click", function() {
-                if ($(this).attr("checkmark") != undefined) {
-                    alert("すでに選択済みです！");
-                } else {
-                    cnt += 1;
-                    if (cnt % 2 == 0) {
-                        $(this).attr("checkmark", "×");
-                        var $appendImage = $img_batsu.clone();
-                        rotateMaruBatsu($appendImage);
-                        $(this).append($appendImage);
-                    } else {
-                        $(this).attr("checkmark", "○");
-                        var $appendImage = $img_maru.clone();
-                        rotateMaruBatsu($appendImage);
-                        $(this).append($appendImage);
-                    }
-                }
-
-                // 勝ち負け判定処理
-                checkWinner();
-            });
-        })(i);
-    }
+    // マスにイベント割り当て
+    setBoxEvent();
 
 });
