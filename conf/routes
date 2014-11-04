@@ -13,3 +13,8 @@ GET     /webjars/*file                    controllers.WebJarAssets.at(file)
 
 # test（○×ゲーム）
 GET     /test                       controllers.Application.test
+GET     /test2                      controllers.Application.test2
+GET     /put/:x/:y/:turn            controllers.Application.put(x:Int, y:Int, turn:Int)
+GET     /get                        controllers.Application.get
+GET     /reset                      controllers.Application.reset
+GET     /enter                      controllers.Application.enter

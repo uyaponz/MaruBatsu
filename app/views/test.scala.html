@@ -1,3 +1,5 @@
+@(turn:Int)
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,6 +30,12 @@
         }
     </style>
 
+    <script>
+    <!--
+        window.turn = @turn;
+    -->
+    </script>
+
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.easing.min.js"))'></script>
 
@@ -36,7 +44,7 @@
 
 <body>
     <div>
-        <h1>まるばつげーむ</h1>
+        <h1 id="title">まるばつげーむ</h1>
         <a id="clear" href="javascript:void(0);">クリア</a>
     </div>
 

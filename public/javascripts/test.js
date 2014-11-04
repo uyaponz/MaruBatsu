@@ -6,6 +6,10 @@ $(document).ready(function() {
 
     var cnt = 0; // ○×選択総数
 
+    var myTurn = window.turn; // 先攻or後攻
+    $("#title").text($("#title").text() + "（" + ((myTurn == 0) ? "先攻" : "後攻") + "）")
+    var prevStatus = JSON.parse($.ajax({ url: "/get", async: false }).responseText);
+
     // ○×を回転させる処理
     function rotateMaruBatsu($obj) {
         $obj
@@ -38,22 +42,29 @@ $(document).ready(function() {
     function setBoxEvent() {
         for (var i=1; i<=9; ++i) {
             (function(i) {
-                $("#box" + i).on("click", function() {
-                    removeBoxEvent(); // クリックされたらイベント解除しておく
-                    if ($(this).attr("checkmark") != undefined) {
-                        alert("すでに選択済みです！");
-                    } else {
-                        cnt += 1;
-                        if (cnt % 2 == 0) {
-                            $(this).attr("checkmark", "×");
-                            var $appendImage = $img_batsu.clone();
-                            rotateMaruBatsu($appendImage);
-                            $(this).append($appendImage);
+                $("#box" + i).on("click rivalClick", function(e) {
+                    if (cnt % 2 == myTurn || e["type"] == "rivalClick") {
+                        removeBoxEvent(); // クリックされたらイベント解除しておく
+                        if ($(this).attr("checkmark") != undefined) {
+                            alert("すでに選択済みです！");
+                            setBoxEvent();
                         } else {
-                            $(this).attr("checkmark", "○");
-                            var $appendImage = $img_maru.clone();
-                            rotateMaruBatsu($appendImage);
-                            $(this).append($appendImage);
+                            cnt += 1;
+                            if (cnt % 2 == 0) {
+                                $(this).attr("checkmark", "×");
+                                var $appendImage = $img_batsu.clone();
+                                rotateMaruBatsu($appendImage);
+                                $(this).append($appendImage);
+                            } else {
+                                $(this).attr("checkmark", "○");
+                                var $appendImage = $img_maru.clone();
+                                rotateMaruBatsu($appendImage);
+                                $(this).append($appendImage);
+                            }
+                            var x = ((i - 1) / 3) | 0;
+                            var y = (i - 1) % 3;
+                            $.ajax({ url: "/put/" + x + "/" + y + "/1", async: false });
+                            prevStatus[i - 1] = 1;
                         }
                     }
                 });
@@ -135,10 +146,25 @@ $(document).ready(function() {
 
     // クリアボタンでリロードする
     $("#clear").on("click", function() {
+        $.ajax({ url: "/reset", async: false });
         location.reload();
     });
 
     // マスにイベント割り当て
     setBoxEvent();
+
+    // ポーリング
+    setInterval(function() {
+        var status = JSON.parse($.ajax({ url: "/get", async: false }).responseText);
+        for (var i=0; i<9; i++) {
+            if (status[i] !== prevStatus[i]) {
+                if ($("#box" + (i + 1)).attr("checkmark") == undefined) {
+                    $("#box" + (i + 1)).trigger("rivalClick");
+                }
+                break;
+            }
+        }
+        prevStatus = status;
+    }, 1000);
 
 });
